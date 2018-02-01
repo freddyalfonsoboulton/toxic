@@ -42,10 +42,11 @@ def main():
     checkpoint = ModelCheckpoint(filepath=args.result_path + "weights/" +
                                           "weights.{epoch:02d}-{val_loss:.2f}.hdf5",
                                  save_best_only=True,
-                                 save_weights_only=True)
-    es = EarlyStopping(patience=2, min_delta=0.001)
+                                 save_weights_only=True,
+                                 verbose=1)
+    es = EarlyStopping(patience=2, verbose=1)
     print("Training Model...")
-    history = model.fit(train_text, train_targets, epochs=1,
+    history = model.fit(train_text, train_targets, epochs=10,
                          batch_size=args.batch_size,
                          validation_data=(val_text, val_targets),
                          callbacks=[checkpoint, ReduceLROnPlateau(), es])
