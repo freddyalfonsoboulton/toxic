@@ -45,7 +45,7 @@ def main():
                  word_embeddings_matrix=embedding_weights,
                  lstm_dim=args.recurrent_units,
                  RNN=rnn_dict[args.rnn],
-                 dropout=args.dropout)
+                 dropout_rate=args.dropout)
 
     checkpoint = ModelCheckpoint(filepath=args.result_path + "weights/" +
                                  "weights.{epoch:02d}-{val_loss:.2f}.hdf5",
