@@ -44,7 +44,7 @@ def main():
                  dense_shape=args.dense_size,
                  word_embeddings_matrix=embedding_weights,
                  lstm_dim=args.recurrent_units,
-                 rnn=rnn_dict[args.rnn],
+                 RNN=rnn_dict[args.rnn],
                  dropout=args.dropout)
 
     checkpoint = ModelCheckpoint(filepath=args.result_path + "weights/" +
