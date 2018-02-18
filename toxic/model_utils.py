@@ -36,13 +36,21 @@ def get_model(sequence_len, dense_shape, word_embeddings_matrix, lstm_dim,
 
 
 def get_model_attention(sequence_len, dense_shape, word_embeddings_matrix,
-                        lstm_dim, dropout_rate, RNN=LSTM):
+                        lstm_dim,
+                        dropout_rate, RNN=LSTM, trainable_embeddings=False,
+                        lr=0.0001):
     """Model that attends to first RNN's sequence."""
     text_input = Input(shape=(sequence_len,))
-    embedding_layer = Embedding(word_embeddings_matrix.shape[0],
-                                word_embeddings_matrix.shape[1],
-                                trainable=False,
-                                weights=[word_embeddings_matrix])
+    if word_embeddings_matrix is None:
+        embedding_layer = Embedding(word_embeddings_matrix.shape[0],
+                                    word_embeddings_matrix.shape[1],
+                                    trainable=True)
+    else:
+        embedding_layer = Embedding(word_embeddings_matrix.shape[0],
+                                    word_embeddings_matrix.shape[1],
+                                    trainable=trainable_embeddings,
+                                    weights=[word_embeddings_matrix])
+
     x = embedding_layer(text_input)
     x = Bidirectional(RNN(lstm_dim, return_sequences=True))(x)
     x = Dropout(dropout_rate)(x)
@@ -54,6 +62,7 @@ def get_model_attention(sequence_len, dense_shape, word_embeddings_matrix,
                   loss='binary_crossentropy',
                   metrics=['acc'])
     return model
+
 
 def mean_auc(y_true, y_pred):
     """
