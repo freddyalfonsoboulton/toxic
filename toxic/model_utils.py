@@ -8,7 +8,8 @@ import numpy as np
 
 
 def get_model(sequence_len, dense_shape, word_embeddings_matrix, lstm_dim,
-              dropout_rate, RNN=LSTM, trainable_embeddings=False):
+              dropout_rate, RNN=LSTM, trainable_embeddings=False,
+              lr=0.0001):
     """Vanilla architecture for LSTM based on word embeddings."""
     text_input = Input(shape=(sequence_len,))
     if word_embeddings_matrix is None:
@@ -28,7 +29,7 @@ def get_model(sequence_len, dense_shape, word_embeddings_matrix, lstm_dim,
     x = Activation('relu')(x)
     model_prediction = Dense(6, activation='sigmoid')(x)
     model = Model(inputs=[text_input], outputs=[model_prediction])
-    model.compile(optimizer=Nadam(lr=0.001),
+    model.compile(optimizer=Nadam(lr=lr),
                   loss='binary_crossentropy',
                   metrics=['acc'])
     return model

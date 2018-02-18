@@ -25,6 +25,8 @@ def main():
     parser.add_argument("--rnn", default='LSTM')
     parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--train_embeddings", default='True')
+    parser.add_argument("--lr", type=int, default=0.001)
+
 
     args = parser.parse_args()
 
@@ -53,7 +55,7 @@ def main():
                  RNN=rnn_dict[args.rnn],
                  dropout_rate=args.dropout,
                  trainable_embeddings=bool(args.train_embeddings),
-                 lr=0.0001)
+                 lr=args.lr)
 
     model.load_weights(args.weights_file)
 

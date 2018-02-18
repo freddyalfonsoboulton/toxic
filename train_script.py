@@ -24,6 +24,7 @@ def main():
     parser.add_argument("--rnn", default='LSTM')
     parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--train_embeddings", default='True')
+    parser.add_argument("--lr", type=int, default=0.001)
 
     args = parser.parse_args()
 
@@ -51,7 +52,8 @@ def main():
                  lstm_dim=args.recurrent_units,
                  RNN=rnn_dict[args.rnn],
                  dropout_rate=args.dropout,
-                 trainable_embeddings=bool(args.train_embeddings))
+                 trainable_embeddings=bool(args.train_embeddings),
+                 lr=args.lr)
 
     checkpoint = ModelCheckpoint(filepath=args.result_path + "weights/" +
                                  "weights.{epoch:02d}-{val_loss:.4f}.hdf5",
