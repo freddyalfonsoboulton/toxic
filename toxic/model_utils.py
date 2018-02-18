@@ -3,6 +3,8 @@ from keras.layers import LSTM, Input, Embedding, Dense,\
                          Dropout, GRU
 from keras.models import Model
 from keras.optimizers import Nadam
+from sklearn.metrics import roc_auc_score
+import numpy as np
 
 
 def get_model(sequence_len, dense_shape, word_embeddings_matrix, lstm_dim,
@@ -46,3 +48,12 @@ def get_model_attention(sequence_len, dense_shape, word_embeddings_matrix,
                   loss='binary_crossentropy',
                   metrics=['acc'])
     return model
+
+def mean_auc(y_true, y_pred):
+    """
+    Compute mean column-wise AUC.
+    Params:
+        y_true: np.array [n_sample, n_classes]
+        y_pred: np.array [n_sample, n_classes]
+    """
+    return np.mean(roc_auc_score(y_true, y_pred, average=None))
