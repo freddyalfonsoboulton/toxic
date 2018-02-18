@@ -1,19 +1,21 @@
-from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint,\
-                            EarlyStopping
+from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from keras.layers import GRU, LSTM
 import argparse
 from toxic.model_utils import get_model, get_model_attention
 import numpy as np
-import pickle
+import pandas as pd
+import os
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="RNNfor identifying and \
+        description="RNN for identifying and \
                      classifying toxic online comments")
 
     parser.add_argument("train_file_path")
-    parser.add_argument("val_file_path")
+    parser.add_argument("test_file_path")
+    parser.add_argument("weights_file")
+    parser.add_argument("submission_path")
     parser.add_argument("--embedding_path", default="None")
     parser.add_argument("--attention", default='No')
     parser.add_argument("--result-path", default="./results/")
@@ -27,21 +29,21 @@ def main():
 
     args = parser.parse_args()
 
+    assert os.isdir(args.submission_path), "submission_path does not exist"
+
     rnn_dict = {"LSTM": LSTM, "GRU": GRU}
     attention_dict = {'No': get_model, 'Yes': get_model_attention}
 
     train_archive = np.load(args.train_file_path)
-    val_archive = np.load(args.val_file_path)
+    test_archive = np.load(args.test_file_path)
 
     if args.embedding_path == "None":
         embedding_weights = None
     else:
         embedding_weights = np.load(args.embedding_path)['weights']
 
-    train_text, train_targets = train_archive['text'],\
-                                train_archive['targets']
-    val_text, val_targets = val_archive['text'],\
-                            val_archive['targets']
+    train_text, train_targets = train_archive['text'], train_archive['targets']
+    test_text = test_archive['text']
 
     func = attention_dict[args.attention]
 
@@ -51,24 +53,27 @@ def main():
                  lstm_dim=args.recurrent_units,
                  RNN=rnn_dict[args.rnn],
                  dropout_rate=args.dropout,
-                 trainable_embeddings=bool(args.train_embeddings))
+                 trainable_embeddings=bool(args.train_embeddings),
+                 lr=0.0001)
 
-    checkpoint = ModelCheckpoint(filepath=args.result_path + "weights/" +
-                                 "weights.{epoch:02d}-{val_loss:.4f}.hdf5",
-                                 save_best_only=True,
-                                 save_weights_only=True,
-                                 verbose=1)
+    model.load_weights(args.weights_file)
+
     es = EarlyStopping(patience=2, verbose=1)
     print("Training Model...")
-    history = model.fit(train_text, train_targets, epochs=10,
+    history = model.fit(train_text, train_targets, epochs=4,
                         batch_size=args.batch_size,
-                        validation_data=(val_text, val_targets),
-                        callbacks=[checkpoint, ReduceLROnPlateau(), es])
+                        callbacks=[ReduceLROnPlateau(), es])
 
-    print("Saving History")
-    pickle.dump(history.history, open(args.result_path + "history/" +
-                                      "model_history.pkl", 'wb'))
+    print("Making Predictions")
+    preds = model.predict(test_text, batch_size=512, verbose=1)
 
+    submission_file = pd.read_csv("data/sample_submission.csv")
+
+    names = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult',
+             'identity_hate']
+    submission_file = pd.concat([submission_file.id,
+                                 pd.DataFrame(preds, columns=names)], axis=1)
+    submission_file.to_csv(args.submission_path, index=False)
 
 if __name__ == "__main__":
     main()
