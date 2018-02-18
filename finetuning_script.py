@@ -30,7 +30,7 @@ def main():
 
     args = parser.parse_args()
 
-    assert os.isdir(args.submission_path), "submission_path does not exist"
+    assert os.path.isdir(args.submission_path), "submission_path does not exist"
 
     rnn_dict = {"LSTM": LSTM, "GRU": GRU}
     attention_dict = {'No': get_model, 'Yes': get_model_attention}
