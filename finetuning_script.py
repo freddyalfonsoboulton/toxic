@@ -18,7 +18,6 @@ def main():
     parser.add_argument("submission_path")
     parser.add_argument("--embedding_path", default="None")
     parser.add_argument("--attention", default='No')
-    parser.add_argument("--result-path", default="./results/")
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--sentences-length", type=int, default=200)
     parser.add_argument("--recurrent-units", type=int, default=30)
