@@ -14,7 +14,7 @@ def main():
 
     parser.add_argument("train_file_path")
     parser.add_argument("val_file_path")
-    parser.add_argument("embedding_path")
+    parser.add_argument("--embedding_path", default="None")
     parser.add_argument("--attention", default='No')
     parser.add_argument("--result-path", default="./results/")
     parser.add_argument("--batch-size", type=int, default=128)
@@ -23,6 +23,7 @@ def main():
     parser.add_argument("--dense-size", type=int, default=20)
     parser.add_argument("--rnn", default='LSTM')
     parser.add_argument("--dropout", type=float, default=0.2)
+    parser.add_argument("--train_embeddings", default='False')
 
     args = parser.parse_args()
 
@@ -31,7 +32,11 @@ def main():
 
     train_archive = np.load(args.train_file_path)
     val_archive = np.load(args.val_file_path)
-    embedding_weights = np.load(args.embedding_path)['weights']
+
+    if args.embedding_path == "None":
+        embedding_weights = None
+    else:
+        embedding_weights = np.load(args.embedding_path)['weights']
 
     train_text, train_targets = train_archive['text'],\
                                 train_archive['targets']
@@ -45,10 +50,11 @@ def main():
                  word_embeddings_matrix=embedding_weights,
                  lstm_dim=args.recurrent_units,
                  RNN=rnn_dict[args.rnn],
-                 dropout_rate=args.dropout)
+                 dropout_rate=args.dropout,
+                 trainable_embeddings=bool(args.train_embeddings))
 
     checkpoint = ModelCheckpoint(filepath=args.result_path + "weights/" +
-                                 "weights.{epoch:02d}-{val_loss:.2f}.hdf5",
+                                 "weights.{epoch:02d}-{val_loss:.4f}.hdf5",
                                  save_best_only=True,
                                  save_weights_only=True,
                                  verbose=1)

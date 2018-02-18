@@ -8,13 +8,18 @@ import numpy as np
 
 
 def get_model(sequence_len, dense_shape, word_embeddings_matrix, lstm_dim,
-              dropout_rate, RNN=LSTM):
+              dropout_rate, RNN=LSTM, trainable_embeddings=False):
     """Vanilla architecture for LSTM based on word embeddings."""
     text_input = Input(shape=(sequence_len,))
-    embedding_layer = Embedding(word_embeddings_matrix.shape[0],
-                                word_embeddings_matrix.shape[1],
-                                trainable=False,
-                                weights=[word_embeddings_matrix])
+    if word_embeddings_matrix is None:
+        embedding_layer = Embedding(word_embeddings_matrix.shape[0],
+                                    word_embeddings_matrix.shape[1],
+                                    trainable=trainable_embeddings)
+    else:
+        embedding_layer = Embedding(word_embeddings_matrix.shape[0],
+                                    word_embeddings_matrix.shape[1],
+                                    trainable=trainable_embeddings,
+                                    weights=[word_embeddings_matrix])
     x = embedding_layer(text_input)
     x = Bidirectional(RNN(lstm_dim, return_sequences=False))(x)
     x = Dropout(dropout_rate)(x)
