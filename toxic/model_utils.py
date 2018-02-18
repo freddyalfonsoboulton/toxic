@@ -14,7 +14,7 @@ def get_model(sequence_len, dense_shape, word_embeddings_matrix, lstm_dim,
     if word_embeddings_matrix is None:
         embedding_layer = Embedding(word_embeddings_matrix.shape[0],
                                     word_embeddings_matrix.shape[1],
-                                    trainable=trainable_embeddings)
+                                    trainable=True)
     else:
         embedding_layer = Embedding(word_embeddings_matrix.shape[0],
                                     word_embeddings_matrix.shape[1],

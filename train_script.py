@@ -23,7 +23,7 @@ def main():
     parser.add_argument("--dense-size", type=int, default=20)
     parser.add_argument("--rnn", default='LSTM')
     parser.add_argument("--dropout", type=float, default=0.2)
-    parser.add_argument("--train_embeddings", default='False')
+    parser.add_argument("--train_embeddings", default='True')
 
     args = parser.parse_args()
 
