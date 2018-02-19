@@ -25,6 +25,8 @@ def main():
     parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--train_embeddings", default='True')
     parser.add_argument("--lr", type=int, default=0.001)
+    parser.add_argument("--word_index_path", default="None")
+    parser.add_argument("--embeddings_dim", default=200)
 
     args = parser.parse_args()
 
@@ -36,8 +38,10 @@ def main():
 
     if args.embedding_path == "None":
         embedding_weights = None
+        word_index = pickle.load(open(args.word_index_path, 'rb'))
     else:
         embedding_weights = np.load(args.embedding_path)['weights']
+        word_index = None
 
     train_text, train_targets = train_archive['text'],\
                                 train_archive['targets']
@@ -53,7 +57,9 @@ def main():
                  RNN=rnn_dict[args.rnn],
                  dropout_rate=args.dropout,
                  trainable_embeddings=bool(args.train_embeddings),
-                 lr=args.lr)
+                 lr=args.lr,
+                 word_index=word_index,
+                 embeddings_dim=args.embeddings_dim)
 
     checkpoint = ModelCheckpoint(filepath=args.result_path + "weights/" +
                                  "weights.{epoch:02d}-{val_loss:.4f}.hdf5",
