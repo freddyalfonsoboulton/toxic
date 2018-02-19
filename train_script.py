@@ -59,7 +59,7 @@ def main():
                  trainable_embeddings=bool(args.train_embeddings),
                  lr=args.lr,
                  word_index=word_index,
-                 embeddings_dim=args.embeddings_dim)
+                 embeddings_dim=int(args.embeddings_dim))
 
     checkpoint = ModelCheckpoint(filepath=args.result_path + "weights/" +
                                  "weights.{epoch:02d}-{val_loss:.4f}.hdf5",
