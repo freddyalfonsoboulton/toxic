@@ -1,11 +1,9 @@
 from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint,\
                             EarlyStopping
 from keras.layers import GRU, LSTM
-import argparse
+import argparse, pickle, os
 from toxic.model_utils import get_model, get_model_attention
 import numpy as np
-import pickle
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -16,7 +14,7 @@ def main():
     parser.add_argument("val_file_path")
     parser.add_argument("--embedding_path", default="None")
     parser.add_argument("--attention", default='No')
-    parser.add_argument("--result-path", default="./results/")
+    parser.add_argument("--result-path", default="./toxic/results/")
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--sentences-length", type=int, default=200)
     parser.add_argument("--recurrent-units", type=int, default=30)
@@ -35,6 +33,11 @@ def main():
 
     train_archive = np.load(args.train_file_path)
     val_archive = np.load(args.val_file_path)
+
+    if not os.path.exists(args.result_path):
+        os.mkdir(args.result_path)
+        os.mkdir(args.result_path + "weights/")
+        os.mkdir(args.result_path + "history/")
 
     if args.embedding_path == "None":
         embedding_weights = None
