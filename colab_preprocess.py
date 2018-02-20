@@ -13,22 +13,22 @@ args = parser.parse_args()
 
 
 #make file structure
-if not os.path.exists('toxic/data'):
-    os.mkdir('toxic/data')
-if not os.path.exists('toxic/data/raw'):
-    os.mkdir('toxic/data/raw')
-if not os.path.exists('toxic/data/processed'):
-    os.mkdir('toxic/data/processed')
+if not os.path.exists('./data'):
+    os.mkdir('./data')
+if not os.path.exists('./data/raw'):
+    os.mkdir('./data/raw')
+if not os.path.exists('./data/processed'):
+    os.mkdir('./data/processed')
 
 get_file('train.csv.zip', origin=args.train_data_url, 
-    cache_dir='toxic/data/raw', cache_subdir='./')
+    cache_dir='./data/raw', cache_subdir='./')
 get_file('test.csv.zip', origin=args.test_data_url, 
-    cache_dir='toxic/data/raw', cache_subdir='./')
+    cache_dir='./data/raw', cache_subdir='./')
 
 MAX_SEQUENCE_LEN = 200
 
-train = pd.read_csv('toxic/data/raw/train.csv.zip')
-test = pd.read_csv('toxic/data/raw/test.csv.zip')
+train = pd.read_csv('./data/raw/train.csv.zip')
+test = pd.read_csv('./data/raw/test.csv.zip')
 
 train_corpus = list(train.comment_text.values)
 test_corpus = list(test.comment_text.values)
@@ -54,11 +54,11 @@ val_seq_padded = pad_sequences(val_seq,maxlen=MAX_SEQUENCE_LEN)
 
 test_sequences_padded = pad_sequences(test_sequences, maxlen=MAX_SEQUENCE_LEN)
 
-np.savez_compressed("toxic/data/processed/train_data.npz",text = train_seq_padded, targets=train_targets)
-np.savez_compressed("toxic/data/processed/val_data.npz", text= val_seq_padded, targets = val_targets)
-np.savez_compressed("toxic/data/processed/test_data.npz", text=test_sequences_padded)
+np.savez_compressed("./data/processed/train_data.npz",text = train_seq_padded, targets=train_targets)
+np.savez_compressed("./data/processed/val_data.npz", text= val_seq_padded, targets = val_targets)
+np.savez_compressed("./data/processed/test_data.npz", text=test_sequences_padded)
 
 import pickle
 
-pickle.dump(tokenizer.word_index, open("toxic/data/processed/word_index_dictionary.pkl",'wb'))
+pickle.dump(tokenizer.word_index, open("./data/processed/word_index_dictionary.pkl",'wb'))
 
