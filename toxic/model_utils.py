@@ -5,16 +5,18 @@ from keras.models import Model
 from keras.optimizers import Nadam
 from sklearn.metrics import roc_auc_score
 import numpy as np
+import pickle
 
 
 def get_model(sequence_len, dense_shape, word_embeddings_matrix, lstm_dim,
               dropout_rate, RNN=LSTM, trainable_embeddings=False,
-              lr=0.0001):
+              lr=0.0001, word_index=None, embeddings_dim=None):
     """Vanilla architecture for LSTM based on word embeddings."""
     text_input = Input(shape=(sequence_len,))
     if word_embeddings_matrix is None:
-        embedding_layer = Embedding(word_embeddings_matrix.shape[0],
-                                    word_embeddings_matrix.shape[1],
+        word_index_dict = pickle.load(open("toxic/data/processed/word_index_dictionary.pkl",'rb'))
+        embedding_layer = Embedding(len(word_index),
+                                    embeddings_dim,
                                     trainable=True)
     else:
         embedding_layer = Embedding(word_embeddings_matrix.shape[0],
@@ -38,12 +40,12 @@ def get_model(sequence_len, dense_shape, word_embeddings_matrix, lstm_dim,
 def get_model_attention(sequence_len, dense_shape, word_embeddings_matrix,
                         lstm_dim,
                         dropout_rate, RNN=LSTM, trainable_embeddings=False,
-                        lr=0.0001):
+                        lr=0.0001, word_index=None, embeddings_dim=None):
     """Model that attends to first RNN's sequence."""
     text_input = Input(shape=(sequence_len,))
     if word_embeddings_matrix is None:
-        embedding_layer = Embedding(word_embeddings_matrix.shape[0],
-                                    word_embeddings_matrix.shape[1],
+        embedding_layer = Embedding(len(word_index),
+                                    embeddings_dim,
                                     trainable=True)
     else:
         embedding_layer = Embedding(word_embeddings_matrix.shape[0],

@@ -1,11 +1,9 @@
 from keras.callbacks import ReduceLROnPlateau, ModelCheckpoint,\
                             EarlyStopping
 from keras.layers import GRU, LSTM
-import argparse
+import argparse, pickle, os
 from toxic.model_utils import get_model, get_model_attention
 import numpy as np
-import pickle
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -25,6 +23,8 @@ def main():
     parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--train_embeddings", default='True')
     parser.add_argument("--lr", type=int, default=0.001)
+    parser.add_argument("--word_index_path", default="None")
+    parser.add_argument("--embeddings_dim", default=200)
 
     args = parser.parse_args()
 
@@ -34,10 +34,17 @@ def main():
     train_archive = np.load(args.train_file_path)
     val_archive = np.load(args.val_file_path)
 
+    if not os.path.exists(args.result_path):
+        os.mkdir(args.result_path)
+        os.mkdir(args.result_path + "weights/")
+        os.mkdir(args.result_path + "history/")
+
     if args.embedding_path == "None":
         embedding_weights = None
+        word_index = pickle.load(open(args.word_index_path, 'rb'))
     else:
         embedding_weights = np.load(args.embedding_path)['weights']
+        word_index = None
 
     train_text, train_targets = train_archive['text'],\
                                 train_archive['targets']
@@ -53,7 +60,9 @@ def main():
                  RNN=rnn_dict[args.rnn],
                  dropout_rate=args.dropout,
                  trainable_embeddings=bool(args.train_embeddings),
-                 lr=args.lr)
+                 lr=args.lr,
+                 word_index=word_index,
+                 embeddings_dim=int(args.embeddings_dim))
 
     checkpoint = ModelCheckpoint(filepath=args.result_path + "weights/" +
                                  "weights.{epoch:02d}-{val_loss:.4f}.hdf5",
