@@ -6,6 +6,7 @@ from keras.optimizers import Nadam
 from sklearn.metrics import roc_auc_score
 import numpy as np
 import pickle
+from metrics import keras_auc
 
 
 def get_model(sequence_len, dense_shape, word_embeddings_matrix, lstm_dim,
@@ -33,7 +34,7 @@ def get_model(sequence_len, dense_shape, word_embeddings_matrix, lstm_dim,
     model = Model(inputs=[text_input], outputs=[model_prediction])
     model.compile(optimizer=Nadam(lr=lr),
                   loss='binary_crossentropy',
-                  metrics=['acc'])
+                  metrics=['acc', keras_auc])
     return model
 
 
@@ -62,7 +63,7 @@ def get_model_attention(sequence_len, dense_shape, word_embeddings_matrix,
     model = Model(inputs=[text_input], outputs=[model_prediction])
     model.compile(optimizer=Nadam(lr=0.001),
                   loss='binary_crossentropy',
-                  metrics=['acc'])
+                  metrics=['acc', keras_auc])
     return model
 
 
