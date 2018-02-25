@@ -2,7 +2,7 @@ from keras.callbacks import Callback
 from .model_utils import mean_auc
 
 class EpochAUC(Callback):
-    def on_epoch_end(self):
+    def on_epoch_end(self, epoch, logs={}):
         valid_x, valid_x, _ = self.model.validation_data
         validation_preds = self.model.predict(valid_x,
                                               batch_size=512, verbose=0)
