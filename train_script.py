@@ -76,7 +76,7 @@ def main():
                         batch_size=args.batch_size,
                         validation_data=(val_text, val_targets),
                         callbacks=[checkpoint, ReduceLROnPlateau(), es,
-                                   EpochAUC])
+                                   EpochAUC()])
 
     print("Saving History")
     pickle.dump(history.history, open(args.result_path + "history/" +
