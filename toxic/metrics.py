@@ -1,5 +1,10 @@
-import keras.backend as K
+from keras.callbacks import Callback
+from .model_utils import mean_auc
 
-def keras_auc(y_true, y_pred):
-    auc_list = K.tf.metrics.auc(predictions=y_true, labels=y_pred)
-    return K.tf.constant(auc_list[1])
+class EpochAUC(Callback):
+    def on_epoch_end(self):
+        valid_x, valid_x, _ = self.model.validation_data
+        validation_preds = self.model.predict(valid_x,
+                                              batch_size=512, verbose=0)
+        auc = mean_auc(valid_x, validation_preds)
+        print("AUC after epoch is {0:.5f}".format(auc))

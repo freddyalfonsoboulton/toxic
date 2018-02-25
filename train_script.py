@@ -4,6 +4,7 @@ from keras.layers import GRU, LSTM
 import argparse, pickle, os
 from toxic.model_utils import get_model, get_model_attention
 import numpy as np
+from toxic.metrics import EpochAUC
 
 def main():
     parser = argparse.ArgumentParser(
@@ -74,7 +75,8 @@ def main():
     history = model.fit(train_text, train_targets, epochs=10,
                         batch_size=args.batch_size,
                         validation_data=(val_text, val_targets),
-                        callbacks=[checkpoint, ReduceLROnPlateau(), es])
+                        callbacks=[checkpoint, ReduceLROnPlateau(), es,
+                                   EpochAUC])
 
     print("Saving History")
     pickle.dump(history.history, open(args.result_path + "history/" +
