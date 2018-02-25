@@ -26,6 +26,7 @@ def main():
     parser.add_argument("--lr", type=int, default=0.001)
     parser.add_argument("--word_index_path", default="None")
     parser.add_argument("--embeddings_dim", default=200)
+    parser.add_argument("--pairwise_penalty", type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -63,7 +64,8 @@ def main():
                  trainable_embeddings=bool(args.train_embeddings),
                  lr=args.lr,
                  word_index=word_index,
-                 embeddings_dim=int(args.embeddings_dim))
+                 embeddings_dim=int(args.embeddings_dim),
+                 pairwise_penalty=args.pairwise_penalty)
 
     checkpoint = ModelCheckpoint(filepath=args.result_path + "weights/" +
                                  "weights.{epoch:02d}-{val_loss:.4f}.hdf5",
@@ -76,7 +78,7 @@ def main():
                         batch_size=args.batch_size,
                         validation_data=(val_text, val_targets),
                         callbacks=[checkpoint, ReduceLROnPlateau(), es,
-                                   EpochAUC()])
+                                   EpochAUC((val_text, val_targets))])
 
     print("Saving History")
     pickle.dump(history.history, open(args.result_path + "history/" +
