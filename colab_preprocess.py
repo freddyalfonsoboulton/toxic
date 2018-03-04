@@ -1,14 +1,15 @@
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import get_file
+from toxic.data_utils import download_file_from_google_drive
 import argparse
 import pandas as pd
 import numpy as np
 import os
 
 parser = argparse.ArgumentParser(description="Preprocessing kaggle-toxic data")
-parser.add_argument("train_data_url")
-parser.add_argument("test_data_url")
+parser.add_argument("train_data_google_drive_id")
+parser.add_argument("test_data_google_drive_id")
 args = parser.parse_args()
 
 
@@ -20,10 +21,10 @@ if not os.path.exists('./data/raw'):
 if not os.path.exists('./data/processed'):
     os.mkdir('./data/processed')
 
-get_file('train.csv.zip', origin=args.train_data_url, 
-    cache_dir='./data/raw', cache_subdir='./')
-get_file('test.csv.zip', origin=args.test_data_url, 
-    cache_dir='./data/raw', cache_subdir='./')
+download_file_from_google_drive(args.train_data_google_drive_id, 
+    './data/raw/train.csv.zip')
+download_file_from_google_drive(args.test_data_google_drive_id,
+    './data/raw/test.csv.zip')
 
 MAX_SEQUENCE_LEN = 200
 
