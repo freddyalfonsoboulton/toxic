@@ -77,8 +77,7 @@ def main():
     history = model.fit(train_text, train_targets, epochs=10,
                         batch_size=args.batch_size,
                         validation_data=(val_text, val_targets),
-                        callbacks=[checkpoint, ReduceLROnPlateau(), es,
-                                   EpochAUC((val_text, val_targets))])
+                        callbacks=[checkpoint, ReduceLROnPlateau(), es])
 
     print("Saving History")
     pickle.dump(history.history, open(args.result_path + "history/" +
